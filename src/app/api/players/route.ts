@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createHash, randomBytes } from "crypto";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendVerificationEmail } from "@/lib/email";
+import { runMatching } from "@/lib/run-matching";
 
 const allowedFormats = ["Singles", "Doubles", "Rotation"];
 
@@ -259,7 +260,20 @@ export async function POST(request: Request) {
             }
         }
 
-        
+
+
+        try {
+            const matchingResult = await runMatching();
+
+            console.log(
+                `Registration matching created ${matchingResult.groupsCreated} group(s).`
+            );
+        } catch (error) {
+            console.error(
+                "Registration matching failed:",
+                error
+            );
+        }
 
         return NextResponse.json(
             {
